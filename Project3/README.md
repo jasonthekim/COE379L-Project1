@@ -12,6 +12,8 @@ You can attach a `-d` to go in daemon mode for the `docker-compose up -d` comman
 NOTE: make sure you are in the root directory `Project3/` where the `docker-compose.yml` file exists.
 
 ## HTTP requests
+Once user has successfully started the container, user should be able to hit endpoints as such:
+
 __To get info about the model:__ 
 ```
 curl localhost:5000/model_summary
