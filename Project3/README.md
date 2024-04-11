@@ -2,6 +2,7 @@
 
 Project 3 done by Jason Kim and Braulio Lopez
 
+
 ## Running Inference Server
 __Run container by using docker-compose commands:__  
 ```
@@ -16,6 +17,7 @@ In order to shut down container:
 docker-compose down
 ```
 For best practice, tt is highly advised to shut down a container before attempting to run it again. 
+
 
 ## HTTP requests
 Once user has successfully started the container, user should be able to hit endpoints as such:
@@ -34,6 +36,7 @@ __To get a prediction for damaged or not on an input picture:__
 ```
 curl -X POST -F "image=@full/path/to/your/image.jpeg" localhost:5000/classify_image
 ```
+
 
 ## Examples
 __GET /model_summary:__
