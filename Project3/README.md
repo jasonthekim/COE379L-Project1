@@ -92,7 +92,7 @@ _________________________________________________________________
 
 __POST /classify_image:__
 ```
-$ curl -X POST -F "image=@/home/ubuntu/nb-data/Projects/Project3/src/data_all_modified-cnn split/test/no_damage/-95.632088_29.849882.jpeg" localhost:5000/classify_image
+$ curl -X POST -F "image=@/home/ubuntu/nb-data/Projects/Project3/src/data_all_modified-cnn-split/test/no_damage/-95.632088_29.849882.jpeg" localhost:5000/classify_image
 {
   "prediction": "No Damage",
   "probability_no_damage": 0.9841947555541992
