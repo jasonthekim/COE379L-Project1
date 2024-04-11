@@ -6,7 +6,6 @@ from PIL import Image
 import numpy as np
 import os
 
-
 app = Flask(__name__)
 
 model = load_model("./models/Alternate_Lenet5.keras")
@@ -103,56 +102,6 @@ def classify_image():
 
         # Return the JSON response
         return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# Define the image size expected by the model
-img_height = 128
-img_width = 128
-
-# Define the batch size for inference
-batch_size = 32
-
-# Define the rescaling function for the dataset
-datagen = ImageDataGenerator(rescale=1./255)
-
-@app.route('/predict_and_evaluate_dataset', methods=['POST'])
-def predict_and_evaluate_dataset():
-    try:
-        # Check if the request contains the dataset directory path in the JSON body
-        request_data = request.get_json()
-        dataset_dir = request_data.get('dataset_dir')
-        print("Dataset directory:", dataset_dir)  # Debugging statement
-        if not dataset_dir or not os.path.isdir(dataset_dir):
-            return jsonify({'error': 'Invalid or missing dataset directory path'}), 400
-
-        # Load the dataset using the ImageDataGenerator
-        print("Loading dataset from directory:", dataset_dir)  # Debugging statement
-        dataset = datagen.flow_from_directory(
-            dataset_dir,  # Use the provided directory path
-            target_size=(img_height, img_width),
-            batch_size=batch_size,
-            class_mode='binary',  # Assuming it's a binary classification problem
-            shuffle=False  # Ensure that images are in the same order as predictions
-        )
-
-        # Predict probabilities for each image in the dataset
-        print("Predicting probabilities for dataset")  # Debugging statement
-        predictions = model.predict(dataset)
-
-        # Evaluate the model's performance on the dataset
-        print("Evaluating model performance on dataset")  # Debugging statement
-        test_loss, test_accuracy = model.evaluate(dataset, verbose=0)
-
-        # Convert the prediction results and evaluation metrics into a JSON format
-        results = {
-            'predictions': predictions.tolist(),  # Convert to list for JSON serialization
-            'test_loss': test_loss,
-            'test_accuracy': test_accuracy
-        }
-
-        # Return the JSON response
-        return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
