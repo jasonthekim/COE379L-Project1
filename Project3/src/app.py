@@ -4,10 +4,12 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 import numpy as np
+import os
+
 
 app = Flask(__name__)
 
-model = load_model("./models/Alternate_Lenet5.h5")
+model = load_model("./models/Alternate_Lenet5.keras")
 
 # Helper functions
 def extract_model_info(model):
@@ -117,11 +119,12 @@ datagen = ImageDataGenerator(rescale=1./255)
 @app.route('/predict_and_evaluate_dataset', methods=['POST'])
 def predict_and_evaluate_dataset():
     try:
-        # Check if the request contains the dataset directory path in the URL parameters
-        dataset_dir = request.args.get('dataset_dir')
+        # Check if the request contains the dataset directory path in the JSON body
+        request_data = request.get_json()
+        dataset_dir = request_data.get('dataset_dir')
         print("Dataset directory:", dataset_dir)  # Debugging statement
-        if not dataset_dir:
-            return jsonify({'error': 'No dataset directory provided in the request URL parameters'}), 400
+        if not dataset_dir or not os.path.isdir(dataset_dir):
+            return jsonify({'error': 'Invalid or missing dataset directory path'}), 400
 
         # Load the dataset using the ImageDataGenerator
         print("Loading dataset from directory:", dataset_dir)  # Debugging statement

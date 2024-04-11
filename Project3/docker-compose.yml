@@ -2,8 +2,7 @@ version: '3'
 
 services:
   inference-server:
-    build: .
+    image: jasonthekim/ml-hurricane-api:latest 
     ports:
       - "5000:5000"
-    volumes:
-      - ./src:/app
+ 
