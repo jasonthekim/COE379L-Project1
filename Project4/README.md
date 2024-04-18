@@ -26,5 +26,6 @@ If allowed, we could leverage these sources to confidently train our first model
 2. Model 2: Sentimental Analysis on Text:
 	- Use pipelines from Transformers.
 	- Train binary classifier to predict whether meme content is hateful or not.
+	- The training dataset will come from the output of model 1, where it'll have meme-to-text labeled with its respective class (of being either hateful or not).
 
 
