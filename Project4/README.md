@@ -28,4 +28,9 @@ If allowed, we could leverage these sources to confidently train our first model
 	- Train binary classifier to predict whether meme content is hateful or not.
 	- The training dataset will come from the output of model 1, where it'll have meme-to-text labeled with its respective class (of being either hateful or not).
 
+It's important to note that in chaining these two models together, there might be loss of critical context, so we will look into various techniques that will help us address this concern and employ them.
 
+## Product/Deliverable
+We will persist our trained/chained models to disk so that it can be reconstituted easily, developing a simple inference server to serve our model over HTTP (Flask).
+
+We will further package our model inference server in a Docker container image and push the image to the Docker Hub, providing clear instructions for starting and stopping our inference server using a docker-compose file. 
