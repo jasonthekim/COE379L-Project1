@@ -1,7 +1,7 @@
 version: '3'
 services:
   inference-server:
-    build: .
+    image: jasonthekim/meme-analysis:v1
     ports:
      - "5000:5000"
     volumes:
