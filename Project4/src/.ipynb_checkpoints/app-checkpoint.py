@@ -1,17 +1,47 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 import torch
+from torch import nn
 from torchvision import transforms
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 import string
 from transformers import CLIPProcessor, CLIPModel
 import io
 
 app = Flask(__name__)
 
-# Load your trained model (assuming it's saved under 'model.pt')
-model = torch.load('./clip_binary_model.pth')
+class BinaryClassifier(nn.Module):
+    def __init__(self, input_dim, output_dim=1):
+        super(BinaryClassifier, self).__init__()
+        self.fc = nn.Linear(input_dim, output_dim)
+
+    def forward(self, x):
+        return torch.sigmoid(self.fc(x))
+
+class CLIPBinaryModel(nn.Module):
+    def __init__(self, clip_model, feature_dim=1024):
+        super(CLIPBinaryModel, self).__init__()
+        self.clip_model = clip_model
+        self.binary_classifier = BinaryClassifier(input_dim=feature_dim)
+
+    def forward(self, input_ids, attention_mask, pixel_values):
+        self.clip_model.eval()  # Ensure the CLIP model is in eval mode
+        with torch.no_grad():
+            outputs = self.clip_model(input_ids=input_ids, attention_mask=attention_mask, pixel_values=pixel_values)
+        
+        image_features = outputs.image_embeds
+        text_features = outputs.text_embeds
+        features = torch.cat((image_features, text_features), dim=1)
+        return self.binary_classifier(features)
+
+# Load your trained model (assuming it's saved under 'clip_binary_model.pth')
+model = CLIPBinaryModel(CLIPModel.from_pretrained("openai/clip-vit-base-patch32"))
+
+# Load the state dictionary into the model
+model_state_dict = torch.load('./clip_binary_model.pth', map_location=torch.device('cpu'))
+model.load_state_dict(model_state_dict.state_dict())
 model.eval()
 
 # Initialize the CLIP processor
@@ -20,21 +50,10 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 # Define the image transformation
 def transform_image(image):
     transform = transforms.Compose([
-        transforms.Lambda(lambda img: resize_with_aspect_ratio(img, 256)),
-        transforms.CenterCrop(224)
+        transforms.Resize((256, 256)),  # Resize the image to 256x256
+        transforms.CenterCrop(224)  # Crop to 224x224
     ])
     return transform(image)
-
-def resize_with_aspect_ratio(image, desired_size):
-    old_width, old_height = image.size
-    aspect_ratio = old_width / old_height
-    if old_width >= old_height:
-        new_width = desired_size
-        new_height = int(new_width / aspect_ratio)
-    else:
-        new_height = desired_size
-        new_width = int(new_height * aspect_ratio)
-    return image.resize((new_width, new_height), Image.LANCZOS)
 
 # Define the text preprocessing
 lemmatizer = WordNetLemmatizer()
@@ -65,7 +84,7 @@ def predict():
         outputs = model(**inputs)
 
     # Assuming the model outputs logits and you apply sigmoid to get probabilities
-    probabilities = torch.sigmoid(outputs.logits)
+    probabilities = torch.sigmoid(outputs)
     prediction = 'Non-offensive' if probabilities < 0.5 else 'Offensive'
 
     return jsonify({'prediction': prediction, 'probability': probabilities.item()})

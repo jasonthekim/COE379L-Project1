@@ -1,6 +1,6 @@
-flask
-torch
+Flask==3.0
+torch==2.3.0
 torchvision
+transformers
 Pillow
 nltk
-transformers
