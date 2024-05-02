@@ -6,4 +6,3 @@ services:
      - "5000:5000"
     volumes:
      - ./src:/usr/src/app
-     - ./src/clip_binary_model.pth:/app/clip_binary_model.pth
