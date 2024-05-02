@@ -85,7 +85,7 @@ def predict():
 
     # Assuming the model outputs logits and you apply sigmoid to get probabilities
     probabilities = torch.sigmoid(outputs)
-    prediction = 'Non-offensive' if probabilities < 0.5 else 'Offensive'
+    prediction = 'Offensive' if probabilities < 0.5 else 'Non-offensive'
 
     return jsonify({'prediction': prediction, 'probability': probabilities.item()})
 
