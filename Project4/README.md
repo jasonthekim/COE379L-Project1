@@ -24,3 +24,35 @@ We will be primarily fine-tuning the CLIP model and experimenting with different
 We will persist our fine-tuned, trained models to disk so that it can be reconstituted easily, developing a simple inference server to serve our model over HTTP (Flask).
 
 We will further package our model inference server in a Docker container image and push the image to the Docker Hub, providing clear instructions for starting and stopping our inference server using a docker-compose file. 
+
+## Running Inference Server
+__Run container by using docker-compose commands:__  
+```
+docker-compose up
+docker ps -a
+```
+You can attach a `-d` to go in daemon mode for the `docker-compose up -d` command. Run `docker ps -a` to ensure container is successfully up.
+NOTE: make sure you are in the root directory `Project4/` where the `docker-compose.yml` file exists.
+
+In order to shut down container: 
+```
+docker-compose down
+```
+For best practice, tt is highly advised to shut down a container before attempting to run it again. 
+
+## HTTP request
+Once user has successfully started the container, user should be able to hit endpoints as such:
+
+__To get a prediction for damaged or not on an input picture:__ 
+```
+curl -X POST -F "image=@/full/path/to/image.png" -F "text=meme's associated sentence/text here" localhost:5000/predict
+```
+
+## Examples
+__POST /predict:__
+```
+$ curl -X POST -F "image=@/home/ubuntu/nb-data/Projects/Project4/src/Images/se7MJYj.png" -F "text=IF YOU DISLIKE TRUMP , YOU SHOULD HELP VOTEHIMIN . THIS WAY WE CAN CHANGE HIS PARTY FROM WITHIN . YES HILLARY SUPPORTERS , THIS IS How RIDICULOUS YOU SOUND ." localhost:5000/predict
+
+{"prediction":"Non-offensive","probability":0.625260055065155}
+```
+The probability score calculated from the ‘predict’ function represents how ‘non-offensive’ an image is (class label 1). 
