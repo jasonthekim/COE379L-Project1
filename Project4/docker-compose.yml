@@ -1,0 +1,9 @@
+version: '3'
+services:
+  inference-server:
+    image: jasonthekim/meme-analysis:v2
+    ports:
+     - "5000:5000"
+    volumes:
+     - ./src:/usr/src/app
+     - ./src/clip_binary_model.pth:/app/clip_binary_model.pth
